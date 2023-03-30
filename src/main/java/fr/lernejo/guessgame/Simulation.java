@@ -1,18 +1,14 @@
 package fr.lernejo.guessgame;
+import fr.lernejo.logger.*;
 
-import fr.lernejo.logger.Logger;
-import fr.lernejo.logger.LoggerFactory;
-
-import java.sql.Timestamp;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Scanner;
 
 public class Simulation {
+
     private final Logger logger = LoggerFactory.getLogger("simulation");
-    private final Player player;  //TODO add variable type
-    private long numberToGuess; //TODO add variable type
+    private final Player player;
+    private long numberToGuess;
 
     public Simulation(Player player) {
         this.player = player;
@@ -20,41 +16,59 @@ public class Simulation {
 
     public void initialize(long numberToGuess) {
         this.numberToGuess = numberToGuess;
+
     }
 
     /**
      * @return true if the player have guessed the right number
      */
     private boolean nextRound() {
-        long number = player.askNextGuess();
-        logger.log("User typed " + number + " ");
-        if (number < numberToGuess) {
-            player.respond(true);
-            return false;
+
+        // Ask number
+        if (player instanceof HumanPlayer) {
+            long numberPlayer =  player.askNextGuess();
+            if (numberPlayer == numberToGuess)
+                return true;
+            else if (numberPlayer < numberToGuess) {
+                player.respond(false);
+            }
+            else {
+                player.respond(true);
+            }
         }
-        else if (number > numberToGuess) {
-            player.respond(false);
-            return false;
+        else if (player instanceof ComputerPlayer) {
+            long nb = ((ComputerPlayer) player).dicho();
+            System.out.println(nb);
+            if (nb == numberToGuess)
+                return true;
+            else if (nb < numberToGuess) {
+                player.respond(false);
+                ((ComputerPlayer) player).setMin(nb);
+            }
+            else {
+                player.respond(true);
+                ((ComputerPlayer) player).setMax(nb);
+            }
         }
-        return true;
+        return false;
     }
 
-    public void loopUntilPlayerSucceed(long limit) {
-        boolean isFinished = false;
-        long n = 0;
-        long startTime = System.currentTimeMillis();
-        while (!isFinished && n < limit){
-            isFinished = nextRound();
-            n++;
-        }
-        long durringTime = System.currentTimeMillis() - startTime;
-        Date time = new Date(durringTime);
-        DateFormat df = new SimpleDateFormat("mm:ss.SSS");
-        logger.log("During time: " + df.format(time) + "\n");
-        if (isFinished)
-            logger.log("Player has found the number in " + n + " iterations\n");
+    public void loopUntilPlayerSucceed(long nb_ask) {
+        long i = 0;
+        long timestamp = System.currentTimeMillis();
+        while (nextRound() == false && i++ < nb_ask);
+        long timestamp2 = System.currentTimeMillis();
+
+        // Duration of the party
+        long duration = timestamp2 - timestamp;
+        Date date = new Date(duration);
+        String result = new SimpleDateFormat("mm:ss.SSSS").format(date);
+        System.out.println(result);
+
+        // Result
+        if (i >= nb_ask)
+            logger.log("Not found :/");
         else
-            logger.log("Player has not found the number within " + limit +
-                " iterations\n");
+            logger.log("Found ! Good job !");
     }
 }

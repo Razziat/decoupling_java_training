@@ -1,34 +1,27 @@
 package fr.lernejo.guessgame;
 
-import fr.lernejo.logger.Logger;
-import fr.lernejo.logger.LoggerFactory;
+import fr.lernejo.logger.*;
+
 import java.util.Scanner;
 
-public class HumanPlayer implements Player {
-    private final Logger logger = LoggerFactory.getLogger("player");
+public class HumanPlayer implements Player{
+    public final Logger logger = LoggerFactory.getLogger("player");
+    public Scanner console = new Scanner(System.in);
+
     @Override
     public long askNextGuess() {
-        Scanner scanner = new Scanner(System.in);
-        while (true)
-        {
-            logger.log("Enter a guess:");
-            if (!scanner.hasNextLong()) {
-                logger.log("Input must be a long number");
-                scanner.nextLine();
-                continue;
-            }
-            long num = scanner.nextLong();
-            scanner.nextLine();
-            return num;
-        }
-
+        System.out.println("Enter a number : ");
+        long numberPlayer = console.nextInt();
+        return numberPlayer;
     }
 
     @Override
     public void respond(boolean lowerOrGreater) {
-        if (lowerOrGreater)
-            logger.log("The value to find is higher\n" );
-        else
-            logger.log("The value to find is lower\n");
+        if (lowerOrGreater == true){
+            logger.log("Lower");
+        }
+        else{
+            logger.log("Greater");
+        }
     }
 }

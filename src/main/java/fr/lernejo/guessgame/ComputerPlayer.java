@@ -3,24 +3,48 @@ package fr.lernejo.guessgame;
 import fr.lernejo.logger.Logger;
 import fr.lernejo.logger.LoggerFactory;
 
+import java.util.Scanner;
+
 public class ComputerPlayer implements Player{
-    private final Logger logger = LoggerFactory.getLogger("computer");
-    private long borneMin = Long.MIN_VALUE;
-    private long borneMax = Long.MAX_VALUE;
+    public final Logger logger = LoggerFactory.getLogger("player");
+    public Scanner console = new Scanner(System.in);
+    public long min = 0;
+
+    public long getMin() {
+        return min;
+    }
+
+    public long getMax() {
+        return max;
+    }
+
+    public long max = Integer.MAX_VALUE;
+
+    public void setMin(long min) {
+        this.min = min;
+    }
+
+    public void setMax(long max) {
+        this.max = max;
+    }
+
     @Override
     public long askNextGuess() {
-        return (borneMin + borneMax)/2;
+        return 0;
+    }
+
+    public long dicho() {
+        return ((getMax() + getMin()) / 2);
     }
 
     @Override
     public void respond(boolean lowerOrGreater) {
-        if (lowerOrGreater) {
-            logger.log("The value to find is higher\n");
-            borneMin = (borneMin + borneMax)/2;
+        if (lowerOrGreater == true){
+            logger.log("Lower");
         }
-        else {
-            logger.log("The value to find is lower\n");
-            borneMax = (borneMin + borneMax)/2;
+        else{
+            logger.log("Greater");
         }
+
     }
 }
