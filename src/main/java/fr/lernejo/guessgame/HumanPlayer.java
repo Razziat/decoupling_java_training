@@ -18,10 +18,10 @@ public class HumanPlayer implements Player{
     @Override
     public void respond(boolean lowerOrGreater) {
         if (lowerOrGreater == true){
-            logger.log("Lower");
+            logger.log("lower ");
         }
         else{
-            logger.log("Greater");
+            logger.log("greater ");
         }
     }
 }
