@@ -1,11 +1,18 @@
 package fr.lernejo.guessgame;
-import fr.lernejo.logger.*;
+
+import fr.lernejo.logger.Logger;
+import fr.lernejo.logger.LoggerFactory;
+
+import java.sql.Timestamp;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Scanner;
 
 public class Simulation {
-
     private final Logger logger = LoggerFactory.getLogger("simulation");
-    private final Player player;
-    private long numberToGuess;
+    private final Player player;  //TODO add variable type
+    private long numberToGuess; //TODO add variable type
 
     public Simulation(Player player) {
         this.player = player;
@@ -13,29 +20,41 @@ public class Simulation {
 
     public void initialize(long numberToGuess) {
         this.numberToGuess = numberToGuess;
-
     }
 
     /**
      * @return true if the player have guessed the right number
      */
     private boolean nextRound() {
-        System.out.println(logger);
-        // Ask number
-        if (player instanceof HumanPlayer) {
-            System.out.println("Enter a number : ");
-            long numberPlayer = ((HumanPlayer) player).console.nextInt();
-            if (numberPlayer == numberToGuess)
-                return true;
-            else if (numberPlayer < numberToGuess)
-                System.out.println("Plus grand");
-            else
-                System.out.println("Plus petit");
+        long number = player.askNextGuess();
+        logger.log("User typed " + number + " ");
+        if (number < numberToGuess) {
+            player.respond(true);
+            return false;
         }
-        return false;
+        else if (number > numberToGuess) {
+            player.respond(false);
+            return false;
+        }
+        return true;
     }
 
-    public void loopUntilPlayerSucceed() {
-        while (nextRound() == false);
+    public void loopUntilPlayerSucceed(long limit) {
+        boolean isFinished = false;
+        long n = 0;
+        long startTime = System.currentTimeMillis();
+        while (!isFinished && n < limit){
+            isFinished = nextRound();
+            n++;
+        }
+        long durringTime = System.currentTimeMillis() - startTime;
+        Date time = new Date(durringTime);
+        DateFormat df = new SimpleDateFormat("mm:ss.SSS");
+        logger.log("During time: " + df.format(time) + "\n");
+        if (isFinished)
+            logger.log("Player has found the number in " + n + " iterations\n");
+        else
+            logger.log("Player has not found the number within " + limit +
+                " iterations\n");
     }
 }
