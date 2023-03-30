@@ -3,6 +3,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class ContextualLogger implements Logger{
+
     private Logger logger;
     private String name;
 
